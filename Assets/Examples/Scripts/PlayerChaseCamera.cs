@@ -6,6 +6,9 @@ public class PlayerChaseCamera : MonoBehaviour
 {
     [SerializeField]
     private Camera? playerCamera;
+
+    [SerializeField]
+    private float speed = 5f;
     
     private GameObject? playerTarget;
 
@@ -38,7 +41,7 @@ public class PlayerChaseCamera : MonoBehaviour
             var delta = Time.deltaTime;
             var current = transform.position;
             var target = playerPosition.Value;
-            transform.position = Vector3.Lerp(current, target, delta * 5f);
+            transform.position = Vector3.Lerp(current, target, delta * speed);
         }
     }
 }
