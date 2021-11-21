@@ -3,7 +3,12 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputHelper : MonoBehaviour
 {
-    public Vector2 move { get; private set; }
+    [SerializeField]
+    private float stickDeadZone = 0.1f;
 
-    public void OnMove(InputValue value) => move = value.Get<Vector2>();
+    public Vector2 Move { get; private set; }
+
+    public bool HasMoveInput => Move.magnitude > stickDeadZone;
+
+    public void OnMove(InputValue value) => Move = value.Get<Vector2>();
 }

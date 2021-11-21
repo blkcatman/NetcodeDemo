@@ -14,14 +14,10 @@ public class AvatarAnimationController : MonoBehaviour
 
     private Vector3 beforePosition;
 
-    private bool updateRotation = true;
-
-    public void SetRotationUpdate(bool flag) => updateRotation = flag;
-
     private void UpdateAnimation(Vector3 direction, float delta)
     {
         var norm = direction.magnitude;
-        if (speedEnebled && animator != null)
+        if (animator != null)
         {
             animator.SetFloat("Speed", (norm / delta) * 1f );
         }
@@ -31,24 +27,7 @@ public class AvatarAnimationController : MonoBehaviour
     {
         if (animator != null)
         {
-
-            foreach (var parameter in animator.parameters)
-            {
-                if (parameter.name == "MotionSpeed")
-                {
-                    motionSpeedEnebled = true;
-                }
-
-                if (parameter.name == "Speed")
-                {
-                    speedEnebled = true;
-                }
-            }
-
-            if (motionSpeedEnebled)
-            {
-                animator.SetFloat("MotionSpeed", 1.0f);
-            }
+            animator.SetFloat("MotionSpeed", 1.0f);
         }
 
         beforePosition = transform.position;
@@ -59,8 +38,8 @@ public class AvatarAnimationController : MonoBehaviour
         var delta = Time.deltaTime;
         var position = transform.position;
         var direction = (position - beforePosition);
-        transform.LookAt(direction.normalized + position, Vector3.up);
         UpdateAnimation(direction, delta);
+
         beforePosition = transform.position;
     }
 }
