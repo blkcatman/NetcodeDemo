@@ -1,38 +1,41 @@
 #nullable enable
 
+using System.Numerics;
+using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
+using Vector3 = UnityEngine.Vector3;
 
 public class PlayerSyncBehaviour : NetworkBehaviour
 {
-    private readonly NetworkVariable<Vector3> networkedPosition = new NetworkVariable<Vector3>(
-        NetworkVariableReadPermission.OwnerOnly
+    private readonly NetworkVariable<Vector3> networkMovingDirection = new NetworkVariable<Vector3>(
+        NetworkVariableReadPermission.Everyone
     );
     
-    private readonly NetworkVariable<Vector3> networkedInputPosition = new NetworkVariable<Vector3>(
-        NetworkVariableReadPermission.OwnerOnly
+    private readonly NetworkVariable<Vector3> networkCurrentPosition = new NetworkVariable<Vector3>(
+        NetworkVariableReadPermission.Everyone
     );
-
-    private PlayerInputHelper? playerInputHelper = null;
 
     [SerializeField]
     private float speed = 5f;
 
     [SerializeField]
-    private float estimateTimeRange = 0.5f;
-    
-    [SerializeField]
     private GameObject? playerModel = null;
 
     [SerializeField]
     private GameObject? playerLocalDummyTemplate = null;
+
+    [SerializeField]
+    private UnityEvent<bool>? onEnterInput;
     
+    private PlayerInputHelper? playerInputHelper = null;
+
     private GameObject? playerLocalDummy = null;
 
-    private float remainEstimationTime = 0f;
-
-    private bool hasInputReleased = false;
+    private bool isCycleUpdateEnabled = false;
 
     public override void OnNetworkSpawn()
     {
@@ -40,18 +43,25 @@ public class PlayerSyncBehaviour : NetworkBehaviour
         {
             var playerCamera = FindObjectOfType<PlayerChaseCamera>();
 
-            if (!IsServer && playerLocalDummyTemplate != null)
+            if (!NetworkManager.Singleton.IsServer)
             {
-                playerModel?.SetActive(false);
-                playerLocalDummy = Instantiate(playerLocalDummyTemplate);
-                playerCamera.SetAsPlayer(playerLocalDummy);
+                if (playerLocalDummyTemplate != null)
+                {
+                    playerModel?.SetActive(false);
+                    playerLocalDummy = Instantiate(playerLocalDummyTemplate);
+                    playerCamera.SetAsPlayer(playerLocalDummy);
+                }
+                else
+                {
+                    playerCamera.SetAsPlayer(gameObject);
+                }
             }
             else
             {
                 playerCamera.SetAsPlayer(gameObject);
             }
             
-            playerCamera.TryActivatePlayerCamera(Camera.main, out var activatedCamera);
+            playerCamera.TryActivatePlayerCamera(Camera.main, out _);
 
             playerInputHelper = FindObjectOfType<PlayerInputHelper>();
             SetRandomPosition();
@@ -60,48 +70,54 @@ public class PlayerSyncBehaviour : NetworkBehaviour
 
     private void SetRandomPosition()
     {
+        var position = new Vector3(Random.Range(-3f, 3f), 0f, Random.Range(-3f, 3f));
+        
         if (NetworkManager.Singleton.IsServer)
         {
-            var position = GetRandomPositionOnPlane();
             transform.position = position;
-            networkedPosition.Value = position;
+            networkMovingDirection.Value = Vector3.zero;
+            networkCurrentPosition.Value = position;
+            SubmitCycleUpdateFlagRequestClientRpc(false);
         }
         else
         {
-            SubmitRansomPositionRequestServerRpc();
+            SubmitCurrentPositionRequestServerRpc(position);
         }
     }
-    
-    private static Vector3 GetRandomPositionOnPlane()
-    {
-        return new Vector3(Random.Range(-3f, 3f), 1f, Random.Range(-3f, 3f));
-    }
 
     [ServerRpc]
-    private void SubmitRansomPositionRequestServerRpc(ServerRpcParams rpcParams = default)
+    private void SubmitMovingDirectionRequestServerRpc(Vector3 direction, ServerRpcParams rpcParams = default)
     {
-        var position = GetRandomPositionOnPlane();
-        networkedPosition.Value = position;
+        if (!isCycleUpdateEnabled)
+        {
+            SubmitCycleUpdateFlagRequestClientRpc(true);
+        }
+        isCycleUpdateEnabled = true;
+        networkMovingDirection.Value = direction;
+        networkCurrentPosition.Value = Vector3.zero;
+    }
+    
+    [ServerRpc]
+    private void SubmitCurrentPositionRequestServerRpc(Vector3 position, ServerRpcParams rpcParams = default)
+    {
+        if (isCycleUpdateEnabled)
+        {
+            SubmitCycleUpdateFlagRequestClientRpc(false);
+        }
+        isCycleUpdateEnabled = false;
+        networkMovingDirection.Value = Vector3.zero;
+        networkCurrentPosition.Value = position;
     }
 
-    [ServerRpc]
-    private void UpdateCyclePositionRequestServerRpc(Vector3 inputPosition)
+    [ClientRpc]
+    private void SubmitCycleUpdateFlagRequestClientRpc(bool flag, ServerRpcParams rpcParams = default)
     {
-        remainEstimationTime = estimateTimeRange;
-        networkedInputPosition.Value = inputPosition;
+        isCycleUpdateEnabled = flag;
     }
-    
-    [ServerRpc]
-    private void UpdatePositionRequestServerRpc(Vector3 position)
-    {
-        networkedPosition.Value = position;
-        remainEstimationTime = 0f;
-    }
-    
+
     private void Update()
     {
         var delta = Time.deltaTime;
-        Vector3 position = networkedPosition.Value;
 
         if (IsOwner)
         {
@@ -112,48 +128,62 @@ public class PlayerSyncBehaviour : NetworkBehaviour
                 var value = move.Value;
                 if (value.magnitude > 0.1f)
                 {
-                    var translatePosition = new Vector3(
-                         value.x * speed * delta, 
-                        0f, 
-                        value.y * speed * delta);
+                    var direction = new Vector3(value.x, 0f, value.y);
+
+                    var translatePosition = direction * speed * delta;
                     
                     if (IsServer)
                     {
-                        transform.position += translatePosition;
-                        networkedPosition.Value += translatePosition;
+                        if (!isCycleUpdateEnabled)
+                        {
+                            SubmitCycleUpdateFlagRequestClientRpc(true);
+                        }
+                        isCycleUpdateEnabled = true;
+                        networkMovingDirection.Value = direction;
+                        networkCurrentPosition.Value = Vector3.zero;
                     }
                     else
                     {
-                        Vector3 lag = Vector3.zero;
-                        
                         if (playerLocalDummy != null)
                         {
                             playerLocalDummy.transform.position += translatePosition;
-                            lag = playerLocalDummy.transform.position - position;
                         }
-
-                        UpdateCyclePositionRequestServerRpc(new Vector3(value.x, 0f, value.y) + lag);
-                        hasInputReleased = false;
+                        SubmitMovingDirectionRequestServerRpc(direction);
                     }
                 }
                 else
                 {
-                    if (!IsServer && playerLocalDummy != null && !hasInputReleased)
+                    if (IsServer)
                     {
-                        UpdatePositionRequestServerRpc(playerLocalDummy.transform.position);
-                        hasInputReleased = true;
+                        if (isCycleUpdateEnabled)
+                        {
+                            SubmitCycleUpdateFlagRequestClientRpc(false);
+                        }
+                        isCycleUpdateEnabled = false;
+                        networkMovingDirection.Value = Vector3.zero;
+                        networkCurrentPosition.Value = transform.position;
+                    }
+                    else
+                    {
+                        if (playerLocalDummy != null)
+                        {
+                            SubmitCurrentPositionRequestServerRpc(playerLocalDummy.transform.position);
+                        }
                     }
                 }
             }
         }
-        else
+
+        var movingDirection = networkMovingDirection.Value;
+        var currentPosition = networkCurrentPosition.Value;
+        
+        if (movingDirection.magnitude > 0.001f)
         {
-            if (IsServer && remainEstimationTime > 0f)
-            {
-                networkedPosition.Value = position + (networkedInputPosition.Value * speed * delta);
-                remainEstimationTime -= delta;
-            }
-            transform.position = networkedPosition.Value;
+            transform.position += movingDirection * speed * delta;
+        }
+        else if (currentPosition.magnitude > 0.001f)
+        {
+            transform.position = currentPosition;
         }
     }
 }
