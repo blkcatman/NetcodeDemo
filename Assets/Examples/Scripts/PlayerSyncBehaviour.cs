@@ -36,7 +36,7 @@ public class PlayerSyncBehaviour : NetworkBehaviour
             }
             else
             {
-                playerLocalDummy = Instantiate(new GameObject("PlayerLocalDummy"));
+                playerLocalDummy = new GameObject("PlayerLocalDummy");
                 for (int i = 0; i < transform.childCount; i++)
                 {
                     transform.GetChild(i).SetParent(playerLocalDummy.transform, false);
