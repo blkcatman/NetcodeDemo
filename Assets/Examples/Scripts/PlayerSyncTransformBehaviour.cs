@@ -11,8 +11,6 @@ public class PlayerSyncTransformBehaviour : NetworkBehaviour
     
     private PlayerInputHelper? playerInputHelper = null;
 
-    private GameObject? playerLocalDummy = null;
-
     [SerializeField]
     private UnityEvent<GameObject>? onTrackingObjectPresented;
 
