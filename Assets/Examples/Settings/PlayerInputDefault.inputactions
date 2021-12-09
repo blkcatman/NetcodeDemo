@@ -1,5 +1,5 @@
 {
-    "name": "PlayerDefaultInput",
+    "name": "PlayerInputDefault",
     "maps": [
         {
             "name": "Player",
@@ -10,6 +10,15 @@
                     "type": "Value",
                     "id": "ba83eee3-e37b-4861-a3d7-0b48233f7fe2",
                     "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Fire",
+                    "type": "Value",
+                    "id": "65c04817-4cba-4c2f-a247-d5351e1dfafd",
+                    "expectedControlType": "Double",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -136,6 +145,39 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "3f3c2a81-72f2-4b62-bc25-8819cf5d2fce",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fef3866f-aa3e-47d2-be6a-f1d9fbf2308e",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b55a2ad0-f254-4a48-ac60-68ab3bbb9ba1",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
