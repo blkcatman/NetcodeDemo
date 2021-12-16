@@ -11,7 +11,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene_NetworkTransform.unity
     guid: 0db57d1c5f74c8243aff5efb8f250c8b
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene_NetworkShooting.unity
     guid: f4e1f094e68c7ed47aa9f0eb44212ca5
+  - enabled: 1
+    path: Assets/Scenes/SampleScene_NetworkMobSpawn.unity
+    guid: b1dfb3edeedae214c86c24ac1dd212a7
   m_configObjects: {}
