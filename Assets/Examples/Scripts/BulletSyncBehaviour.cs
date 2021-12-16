@@ -45,6 +45,24 @@ public class BulletSyncBehaviour : NetworkBehaviour
         RemoveBulletOnServer();
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (IsOwner)
+        {
+            if (other.CompareTag("Mob"))
+            {
+                if (IsServer)
+                {
+                    RemoveBulletOnServer();
+                }
+                else
+                {
+                    SubmitRemovingBulletRequestServerRpc();
+                }
+            }
+        }
+    }
+
     private void Update()
     {
         var delta = Time.deltaTime;

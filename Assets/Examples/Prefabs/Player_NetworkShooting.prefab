@@ -95,6 +95,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 4630049733942799413, guid: caa14df6111614946b059ce4a83ab572, type: 3}
+  bulletDummyPrefab: {fileID: 8375055130590327710, guid: a591619ce56f1a843a8e944883f8083a, type: 3}
   fireRate: 0.5
   gunRoot: {fileID: 5755200517317538057}
 --- !u!114 &5384243858673147788
