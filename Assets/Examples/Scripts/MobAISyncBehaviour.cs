@@ -20,6 +20,7 @@ public class MobAISyncBehaviour : NetworkBehaviour
     
     public override void OnNetworkSpawn()
     {
+        if (!IsServer) return;
         serverObjectsSupplier = GameObject.FindObjectOfType<ServerObjectsSupplier>();
     }
     
@@ -51,6 +52,7 @@ public class MobAISyncBehaviour : NetworkBehaviour
 
     private void Update()
     {
+        if (!IsServer) return;
         if (serverObjectsSupplier == null || navMeshAgent == null) return;
         elapsedTime += Time.deltaTime;
 
