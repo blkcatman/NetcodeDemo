@@ -1950,9 +1950,5 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ground
       objectReference: {fileID: 0}
-    - target: {fileID: 792229288083607503, guid: 6e8051d93fe2c7a4b8b791a6eed6e7b6, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 127
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6e8051d93fe2c7a4b8b791a6eed6e7b6, type: 3}

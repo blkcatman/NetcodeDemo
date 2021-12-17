@@ -11,11 +11,9 @@ public class MobSpawner : MonoBehaviour
     
     [SerializeField]
     private GameObject? mobPrefab;
-    
 
     private float elapsedTime;
-
-    // Update is called once per frame
+    
     void Update()
     {
         elapsedTime += Time.deltaTime;
