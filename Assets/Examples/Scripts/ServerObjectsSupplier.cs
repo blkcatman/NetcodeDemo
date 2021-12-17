@@ -12,12 +12,12 @@ public class ServerObjectsSupplier : MonoBehaviour
     
     [SerializeField]
     private List<GameObject>? supplyingObjects;
+    
+    private readonly Dictionary<ulong, NetworkObject> playerNetworkObjects = new Dictionary<ulong, NetworkObject>();
 
     public IReadOnlyList<ulong> PlayerClientIds => playerNetworkObjects.Keys.ToList();
 
-    public NetworkObject GetPlayerNetworkObject(ulong clientId) => playerNetworkObjects[clientId];
-
-    private readonly Dictionary<ulong, NetworkObject> playerNetworkObjects = new Dictionary<ulong, NetworkObject>();
+    public NetworkObject? GetPlayerNetworkObject(ulong clientId) => playerNetworkObjects[clientId];
 
     public NetworkObject? GetNetworkObjectFromId(ulong networkObjectId)
     {
