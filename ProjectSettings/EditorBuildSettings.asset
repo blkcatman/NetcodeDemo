@@ -14,7 +14,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene_NetworkShooting.unity
     guid: f4e1f094e68c7ed47aa9f0eb44212ca5
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene_NetworkMobSpawn.unity
     guid: b1dfb3edeedae214c86c24ac1dd212a7
+  - enabled: 1
+    path: Assets/Scenes/SampleScene_PhotonNetwork.unity
+    guid: f4ec4d0e1363e0e45927b67877814ce7
   m_configObjects: {}
