@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.community.netcode.transport.photon-realtime": "https://github.com/Unity-Technologies/multiplayer-community-contributions.git?path=/Transports/com.community.netcode.transport.photon-realtime#8e87c82deafbac1f73e47c8e2a00d134c51031bd",
     "com.unity.collab-proxy": "1.15.1",
     "com.unity.feature.development": "1.0.1",
     "com.unity.ide.rider": "3.0.7",
