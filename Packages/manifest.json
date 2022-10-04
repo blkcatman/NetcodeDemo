@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.community.netcode.transport.photon-realtime": "https://github.com/Unity-Technologies/multiplayer-community-contributions.git?path=/Transports/com.community.netcode.transport.photon-realtime#8e87c82deafbac1f73e47c8e2a00d134c51031bd",
+    "com.community.netcode.transport.photon-realtime": "https://github.com/Unity-Technologies/multiplayer-community-contributions.git?path=/Transports/com.community.netcode.transport.photon-realtime#9a480a58638b4bfbcc9fc6da4a5c39c216966aaf",
     "com.unity.collab-proxy": "1.15.1",
     "com.unity.feature.development": "1.0.1",
     "com.unity.ide.rider": "3.0.7",
@@ -8,7 +8,7 @@
     "com.unity.ide.vscode": "1.2.4",
     "com.unity.inputsystem": "1.1.1",
     "com.unity.multiplayer.tools": "1.0.0-pre.2",
-    "com.unity.netcode.gameobjects": "1.0.0-pre.3",
+    "com.unity.netcode.gameobjects": "1.0.2",
     "com.unity.test-framework": "1.1.29",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.6.2",
