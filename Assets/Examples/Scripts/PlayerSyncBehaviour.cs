@@ -7,10 +7,12 @@ using UnityEngine.Events;
 public class PlayerSyncBehaviour : NetworkBehaviour
 {
     private readonly NetworkVariable<Vector3> networkMovingDirection = new NetworkVariable<Vector3>(
+        Vector3.zero,
         NetworkVariableReadPermission.Everyone
     );
     
     private readonly NetworkVariable<Vector3> networkCurrentPosition = new NetworkVariable<Vector3>(
+        Vector3.zero,
         NetworkVariableReadPermission.Everyone
     );
 
